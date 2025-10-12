@@ -1,0 +1,92 @@
+curl: curl -H "X-CMC_PRO_API_KEY: <YOUR_API_KEY>" -G https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest --data-urlencode "symbol=ETH"
+
+
+return:
+{
+  "status": {
+    "timestamp": "2025-09-30T18:26:30.939Z",
+    "error_code": 0,
+    "error_message": null,
+    "elapsed": 58,
+    "credit_count": 1,
+    "notice": null
+  },
+  "data": {
+    "ETH": {
+      "id": 1027,
+      "name": "Ethereum",
+      "symbol": "ETH",
+      "slug": "ethereum",
+      "num_market_pairs": 10854,
+      "date_added": "2015-08-07T00:00:00.000Z",
+      "tags": [
+        "pos",
+        "smart-contracts",
+        "ethereum-ecosystem",
+        "coinbase-ventures-portfolio",
+        "three-arrows-capital-portfolio",
+        "polychain-capital-portfolio",
+        "binance-labs-portfolio",
+        "blockchain-capital-portfolio",
+        "boostvc-portfolio",
+        "cms-holdings-portfolio",
+        "dcg-portfolio",
+        "dragonfly-capital-portfolio",
+        "electric-capital-portfolio",
+        "fabric-ventures-portfolio",
+        "framework-ventures-portfolio",
+        "hashkey-capital-portfolio",
+        "kenetic-capital-portfolio",
+        "huobi-capital-portfolio",
+        "alameda-research-portfolio",
+        "a16z-portfolio",
+        "1confirmation-portfolio",
+        "winklevoss-capital-portfolio",
+        "usv-portfolio",
+        "placeholder-ventures-portfolio",
+        "pantera-capital-portfolio",
+        "multicoin-capital-portfolio",
+        "paradigm-portfolio",
+        "layer-1",
+        "ftx-bankruptcy-estate",
+        "sora-ecosystem",
+        "rsk-rbtc-ecosystem",
+        "world-liberty-financial-portfolio",
+        "us-strategic-crypto-reserve",
+        "binance-ecosystem",
+        "binance-listing",
+        "sophon-ecosystem"
+      ],
+      "max_supply": null,
+      "circulating_supply": 120703250.5285526,
+      "total_supply": 120703250.5285526,
+      "is_active": 1,
+      "infinite_supply": true,
+      "platform": null,
+      "cmc_rank": 2,
+      "is_fiat": 0,
+      "self_reported_circulating_supply": null,
+      "self_reported_market_cap": null,
+      "tvl_ratio": null,
+      "last_updated": "2025-09-30T18:25:00.000Z",
+      "quote": {
+        "USD": {
+          "price": 4111.316023094548,
+          "volume_24h": 36850464372.28418,
+          "volume_change_24h": -4.8375,
+          "percent_change_1h": 0.19178491,
+          "percent_change_24h": -0.89611868,
+          "percent_change_7d": -1.19547496,
+          "percent_change_30d": -8.22481412,
+          "percent_change_60d": 15.43575215,
+          "percent_change_90d": 59.8117307,
+          "market_cap": 496249207937.6338,
+          "market_cap_dominance": 12.8079,
+          "fully_diluted_market_cap": 496249207937.63,
+          "tvl": null,
+          "last_updated": "2025-09-30T18:25:00.000Z"
+        }
+      }
+    }
+  }
+}
