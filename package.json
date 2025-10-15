@@ -51,7 +51,8 @@
           "id": "vscodeSidebar.openview",
           "name": "View",
           "contextualTitle": "View",
-          "icon": "assets/vswallet-logo.svg"
+          "icon": "assets/vswallet-logo.svg",
+          "visibility": "collapsed"
         }
       ]
     },
@@ -66,30 +67,25 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src",
-    "test": "vscode-test"
+  "vscode:prepublish": "npm run compile && npm run build:webview",
+  "compile": "tsc -p ./",
+  "watch": "tsc -watch -p ./",
+  "build:webview": "cd src/webview-ui/vswallet && npm run build",
+  "watch:webview": "cd src/webview-ui/vswallet && npm run dev",
+  "pretest": "npm run compile && npm run lint",
+  "lint": "eslint src",
+  "test": "vscode-test"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
-    "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.1",
     "@types/vscode": "^1.104.0",
     "@typescript-eslint/eslint-plugin": "^8.42.0",
     "@typescript-eslint/parser": "^8.42.0",
-    "@vitejs/plugin-react": "^5.0.4",
     "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.5.2",
     "eslint": "^9.34.0",
     "typescript": "^5.9.3",
     "vite": "^7.1.9"
-  },
-  "dependencies": {
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0"
   }
 }
