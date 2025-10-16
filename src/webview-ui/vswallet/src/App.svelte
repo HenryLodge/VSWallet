@@ -1,13 +1,11 @@
 <script lang="ts">
   import HomeScreen from './HomeScreen.svelte';
   import NewWalletScreen from './NewWalletScreen.svelte';
-  import TransactScreen from './TransactScreen.svelte';
+  import TransactRecieveScreen from './TransactRecieveScreen.svelte';
+  import TransactSendScreen from './TransactSendScreen.svelte';
   
   let currentScreen = 'HomeScreen';
-  let more = 0;
-
   function navigate(screen: string) {
-    if (screen === 'love') more++;
     currentScreen = screen;
   }
 </script>
@@ -16,6 +14,20 @@
   <HomeScreen onNavigate={navigate} />
 {:else if currentScreen === 'NewWalletScreen'}
   <NewWalletScreen onNavigate={navigate} />
-{:else if currentScreen === 'TransactScreen'}
-<TransactScreen onNavigate={navigate} />
+{:else if currentScreen === 'TransactRecieveScreen'}
+<TransactRecieveScreen onNavigate={navigate} />
+{:else if currentScreen === 'TransactSendScreen'}
+<TransactSendScreen onNavigate={navigate} />
 {/if}
+
+<style>
+  :global(body) {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    background-color: var(--vscode-sideBar-background);
+    color: var(--vscode-sideBar-foreground);
+  }
+</style>
