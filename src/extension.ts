@@ -33,7 +33,7 @@ export function activate(context: vscode.ExtensionContext) {
 	EthPriceStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, currentEthPrice);
 	EthPriceStatusBarItem.command = testStatusBar;
 	context.subscriptions.push(EthPriceStatusBarItem);
-	updateBTCPriceStatusBarItem();
+	updateETHPriceStatusBarItem();
 
 	// ALL SIDEBAR CODE
 	const provider = new CustomSidebarViewProvider(context.extensionUri);
@@ -43,13 +43,6 @@ export function activate(context: vscode.ExtensionContext) {
 			CustomSidebarViewProvider.viewType,
 		  provider
 		)
-	);
-
-	context.subscriptions.push(
-		vscode.commands.registerCommand("vscodeSidebar.menu.view", () => {
-		  const message = "Menu button clicked";
-		  vscode.window.showInformationMessage(message);
-		})
 	);
 
 	// Command has been defined in the package.json file
@@ -63,8 +56,8 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(openWebView);
 }
 
-function updateBTCPriceStatusBarItem(): void {
-	// gets BTC price from CoinMarketCap API
+function updateETHPriceStatusBarItem(): void {
+	// gets ETH price from CoinMarketCap API	
 	const price = "$" + 100;
 	EthPriceStatusBarItem.text = price;
 	EthPriceStatusBarItem.show();

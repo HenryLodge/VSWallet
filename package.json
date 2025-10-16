@@ -27,12 +27,6 @@
       {
         "command": "vscodeSidebar.openview",
         "title": "Sidebar View"
-      },
-      {
-        "command": "vscodeSidebar.menu.view",
-        "category": "vscode-extension-sidebar-html",
-        "title": "Menu",
-        "icon": "$(clear-all)"
       }
     ],
     "viewsContainers": {
@@ -49,19 +43,9 @@
         {
           "type": "webview",
           "id": "vscodeSidebar.openview",
-          "name": "View",
-          "contextualTitle": "View",
+          "name": "",
           "icon": "assets/vswallet-logo.svg",
           "visibility": "collapsed"
-        }
-      ]
-    },
-    "menus": {
-      "view/title": [
-        {
-          "command": "vscodeSidebar.menu.view",
-          "group": "navigation",
-          "when": "view == vscodeSidebar.openview"
         }
       ]
     }
