@@ -1,4 +1,4 @@
-# vswallet README
+# vswallet IN PROGRESS
 
 VSWallet is a noncustodial Ethereum wallet built into your VSCode editor that supports creating Ethereum wallet addresses and the sending and recieving of Ethereum.
 ## Features
