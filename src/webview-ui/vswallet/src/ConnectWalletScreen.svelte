@@ -1,0 +1,16 @@
+<script lang="ts">
+	export let onNavigate: (screen: string) => void;
+</script>
+
+<main>
+  <p>Connect Wallet Screen</p>
+  <button class="back-button"  on:click={() => onNavigate("HomeScreen")} title="Back">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+      <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12l6 6m-6-6l6-6"/>
+    </svg>
+  </button>
+</main>
+
+<style>
+  /*  */
+</style>

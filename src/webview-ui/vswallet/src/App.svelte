@@ -7,6 +7,7 @@
   import ChangeWalletScreen from './ChangeWalletScreen.svelte';
   import SettingsScreen from './SettingsScreen.svelte';
   import TransactHistory from './TransactHistory.svelte';
+  import ConnectWalletScreen from './ConnectWalletScreen.svelte';
 
   let currentScreen = 'HomeScreen';
   function navigate(screen: string) {
@@ -30,6 +31,8 @@
 <SettingsScreen onNavigate={navigate} />
 {:else if currentScreen === 'TransactHistoryScreen'}
 <TransactHistory onNavigate={navigate} />
+{:else if currentScreen === 'ConnectWalletScreen'}
+<ConnectWalletScreen onNavigate={navigate} />
 {/if}
 
 <style>
