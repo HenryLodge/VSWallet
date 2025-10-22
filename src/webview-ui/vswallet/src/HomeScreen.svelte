@@ -3,7 +3,7 @@
   
   let WalletETHAmount = 0.0;
   let WalletUSDAmount = 0.0;
-  let PortfolioDeltaPercent = 0;
+  let PortfolioDeltaPercent = 25;
   let menuOpen = false;
 
   // Stats data (to be populated by backend)
@@ -27,15 +27,12 @@
 
   function handleMenuAction(action: string) {
     menuOpen = false;
-    // Handle different menu actions
     console.log('Menu action:', action);
-    // You can add specific logic for each action here
   }
 
   let selectedTimePeriod = "1D";
   function selectTimePeriod(period: string) {
     selectedTimePeriod = period;
-    // Handle time period change
     console.log('Time period selected:', period);
   }
 </script>
@@ -52,6 +49,9 @@
       <div class="menu-dropdown">
         <button class="menu-item" on:click={() => onNavigate("NewWalletScreen")}>
           New Wallet
+        </button>
+        <button class="menu-item" on:click={() => onNavigate("ConnectWalletScreen")}>
+          Connect Existing Wallet
         </button>
         <button class="menu-item" on:click={() => onNavigate("TransactHistoryScreen")}>
           Transaction History
@@ -100,7 +100,6 @@
     </div>
 
     <svg viewBox="0 0 160 90" class="progress-svg">
-      <!-- Background arc -->
       <path
         class="background-arc"
         d="M 10 80 A 70 70 0 0 1 150 80"
@@ -110,7 +109,6 @@
         stroke-linecap="round"
       />
       
-      <!-- Progress arc -->
       <path
         class="progress-arc"
         d="M 10 80 A 70 70 0 0 1 150 80"
@@ -135,15 +133,15 @@
   <div class="action-buttons">
     <button class="action-button send" on:click={() => onNavigate("TransactSendScreen")}>
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="12" y1="5" x2="12" y2="19"></line>
-        <polyline points="19 12 12 19 5 12"></polyline>
+        <line x1="12" y1="19" x2="12" y2="5"></line>
+        <polyline points="5 12 12 5 19 12"></polyline>
       </svg>
       Send
     </button>
     <button class="action-button receive" on:click={() => onNavigate("TransactRecieveScreen")}>
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="12" y1="19" x2="12" y2="5"></line>
-        <polyline points="5 12 12 5 19 12"></polyline>
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <polyline points="19 12 12 19 5 12"></polyline>
       </svg>
       Receive
     </button>
@@ -180,7 +178,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding: 0;
+    padding: 10px;
     margin: 0;
     width: 100%;
     height: 100vh;
@@ -197,7 +195,6 @@
   }
 
   .menu-button {
-    padding: 3px;
     margin: 0;
     border: none;
     border-radius: 7%;
@@ -205,13 +202,16 @@
     color: var(--vscode-button-foreground);
     cursor: pointer;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s;
+    align-items: left;
+    justify-content: left;
+    transition: opacity 0.2s;
+    outline: 0;
+    opacity: 75%;
   }
 
   .menu-button:hover {
-    background-color: var(--vscode-button-hoverBackground);
+    outline: 0;
+    opacity: 100%;
   }
 
   .menu-dropdown {
@@ -253,6 +253,7 @@
 
   .menu-item:hover {
     background-color: var(--vscode-list-hoverBackground);
+    outline: 0;
   }
 
   .wallet-info-container {
@@ -288,11 +289,13 @@
 
   .period-button:hover {
     color: rgba(255, 255, 255, 0.8);
+    outline: 0;
   }
 
   .period-button.active {
     background-color: rgba(255, 255, 255, 0.12);
     color: rgba(255, 255, 255, 0.95);
+    outline: 0;
   }
 
   .progress-svg {
@@ -352,6 +355,7 @@
   .action-button:hover {
     background-color: var(--vscode-button-hoverBackground);
     transform: translateY(-2px);
+    outline: 0;
   }
 
   .action-button:active {
@@ -366,10 +370,12 @@
 
   .action-button.send:hover svg {
     transform: translateY(-2px);
+    outline: 0;
   }
 
   .action-button.receive:hover svg {
     transform: translateY(-2px);
+    outline: 0;
   }
 
   .stats-container {
