@@ -37,12 +37,24 @@
 
 <style>
   :global(body) {
-    margin: 0;
-    padding: 0;
+    margin: 0 !important;
+    padding: 0 !important;
     overflow: hidden;
     height: 100vh;
     width: 100vw;
+    min-width: 300px;
+    max-width: 500px;
     background-color: var(--vscode-sideBar-background);
     color: var(--vscode-sideBar-foreground);
+  }
+  
+  :global(html) {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  :global(#app) {
+    margin: 0 !important;
+    padding: 0 !important;
   }
 </style>
