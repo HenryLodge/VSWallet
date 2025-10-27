@@ -49,7 +49,7 @@
 
   <div class="form-container">
     <div class="input-group">
-      <label class="input-label">Recipient Address</label>
+      <label class="input-label" for="input-label">Recipient Address</label>
       <input 
         type="text" 
         class="text-input"
@@ -59,7 +59,7 @@
     </div>
 
     <div class="input-group">
-      <label class="input-label">Amount</label>
+      <label class="input-label" for="input-label">Amount</label>
       <div class="amount-input-container">
         <input 
           type="text" 
@@ -86,7 +86,7 @@
     </div>
 
     <div class="input-group">
-      <label class="input-label">Note (Optional)</label>
+      <label class="input-label" for="inpur-label">Note (Optional)</label>
       <input 
         type="text" 
         class="text-input" 

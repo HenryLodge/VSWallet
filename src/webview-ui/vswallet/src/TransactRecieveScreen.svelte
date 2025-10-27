@@ -42,7 +42,7 @@
     </div>
 
     <div class="address-section">
-      <label class="input-label">Your Wallet Address</label>
+      <label class="input-label" for="input-label">Your Wallet Address</label>
       <div class="address-container">
         <div class="address-text">{walletAddress}</div>
         <button class="copy-button" on:click={copyAddress} title="Copy Address">
