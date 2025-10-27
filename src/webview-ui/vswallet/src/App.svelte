@@ -5,7 +5,6 @@
   import TransactSendScreen from './TransactSendScreen.svelte';
   import AboutScreen from './AboutScreen.svelte';
   import ChangeWalletScreen from './ChangeWalletScreen.svelte';
-  import SettingsScreen from './SettingsScreen.svelte';
   import TransactHistory from './TransactHistory.svelte';
   import ConnectWalletScreen from './ConnectWalletScreen.svelte';
 
@@ -27,8 +26,6 @@
 <AboutScreen onNavigate={navigate} />
 {:else if currentScreen === 'ChangeWalletScreen'}
 <ChangeWalletScreen onNavigate={navigate} />
-{:else if currentScreen === 'SettingsScreen'}
-<SettingsScreen onNavigate={navigate} />
 {:else if currentScreen === 'TransactHistoryScreen'}
 <TransactHistory onNavigate={navigate} />
 {:else if currentScreen === 'ConnectWalletScreen'}

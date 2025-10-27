@@ -59,9 +59,6 @@
         <button class="menu-item" on:click={() => onNavigate("ChangeWalletScreen")}>
           Change Wallet
         </button>
-        <button class="menu-item" on:click={() => onNavigate("SettingsScreen")}>
-          Settings
-        </button>
         <button class="menu-item" on:click={() => onNavigate("AboutScreen")}>
           About
         </button>
