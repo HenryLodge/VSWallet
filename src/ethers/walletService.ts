@@ -71,8 +71,36 @@ export class WalletService {
 
     // get wallet transact history
     async walletTransactHistory(address: string): Promise<any> {
-      // use etherscan api
-      return [];
+      const query = `
+        query ($address: Bytes!) {
+          transactions(
+            where: { or: [{ from: $address }, { to: $address }] }
+            orderBy: timestamp
+            orderDirection: desc
+            first: 100
+          ) {
+            id
+            hash
+            from
+            to
+            value
+            timestamp
+            blockNumber
+          }
+        }
+      `;
+
+      const response = await fetch('https://api.thegraph.com/subgraphs/name/[SUBGRAPH]', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query,
+          variables: { address: address.toLowerCase() }
+        })
+      });
+
+      const data = await response.json() as { data: { transactions: any[] } };
+      return data.data.transactions;
     }
 
     // estimate gas fee amount
@@ -82,18 +110,21 @@ export class WalletService {
       }
 
       const feeData = await this.provider.getFeeData();
-  
       const gasPrice = feeData.maxFeePerGas;
-      
+      let gasLimit: bigint;
       if (!gasPrice) {
         throw new Error("Unable to fetch gas price");
       }
 
-      const gasLimit = await this.provider.estimateGas({
-        to,
-        value: ethers.parseEther(amount),
-        from: this.wallet.address
-      });
+      try {
+        gasLimit = await this.provider.estimateGas({
+          to,
+          value: ethers.parseEther(amount),
+          from: this.wallet.address
+        });
+      } catch (error) {
+        gasLimit = 21000n;
+      }
 
       const gasFee = gasPrice * gasLimit;
       const gasFeeEth = ethers.formatEther(gasFee);
@@ -107,9 +138,37 @@ export class WalletService {
     }
 
     // get curr ETH price
-    // use api
     async getCurrETHPrice(): Promise<number> {
-      return 0;
+      if (!this.provider) {
+        throw new Error("Provider not initialized");
+      }
+
+      const CHAINLINK_ETH_USD_SEPOLIA = "0x694AA1769357215DE4FAC081bf1f309aDC325306";
+      const ABI = [
+        {
+          inputs: [],
+          name: "latestRoundData",
+          outputs: [
+            { name: "roundId", type: "uint80" },
+            { name: "answer", type: "int256" },
+            { name: "startedAt", type: "uint256" },
+            { name: "updatedAt", type: "uint256" },
+            { name: "answeredInRound", type: "uint80" }
+          ],
+          stateMutability: "view",
+          type: "function"
+        }
+      ];
+
+      const priceFeed = new ethers.Contract(
+        CHAINLINK_ETH_USD_SEPOLIA,
+        ABI,
+        this.provider
+      );
+
+      const roundData = await priceFeed.latestRoundData();
+      const price = Number(roundData.answer) / 1e8;
+      return price;
     }
 }
 
