@@ -6,3 +6,4 @@ node_modules
 .vscode-test.mjs
 eslint.config.mjs
 .vscodeignore
+.env
