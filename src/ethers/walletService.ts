@@ -74,53 +74,8 @@ export class WalletService {
     }
 
     // get wallet transact history
-    // async walletTransactHistory(address: string): Promise<any> {
-    //   try {
-    //     // Validate address format
-    //     if (!address || !/^0x[a-fA-F0-9]{40}$/.test(address)) {
-    //       console.error('Invalid Ethereum address format');
-    //       return [];
-    //     }
-
-    //     // const url = `https://api-sepolia.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&offset=100&sort=desc&apikey=${this.ETHERSCAN_API_KEY}`;
-    //     const url = `https://api-sepolia.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=asc&apikey=${this.ETHERSCAN_API_KEY}`;
-
-    //     const response = await fetch(url);
-        
-    //     // Check HTTP response status
-    //     if (!response.ok) {
-    //       console.error(`HTTP error! status: ${response.status}`);
-    //       return [];
-    //     }
-        
-    //     const data = await response.json() as { status: string; message: string; result: any[] };
-        
-    //     // Handle successful response with results
-    //     if (data.status === '1' && Array.isArray(data.result)) {
-    //       return data.result;
-    //     }
-        
-    //     // Handle error cases from Etherscan API
-    //     if (data.status === '0') {
-    //       // "No transactions found" is a valid case, not an error
-    //       if (data.message === 'No transactions found') {
-    //         return [];
-    //       }
-    //       console.error('Etherscan API error:', data.message);
-    //     }
-        
-    //     return [];
-    //   } catch (error) {
-    //     console.error('Error fetching transaction history:', error);
-    //     return [];
-    //   }
-    // }
-
-    async walletTransactHistory(
-      address: string
-    ): Promise<any[]> {
+    async walletTransactHistory(address: string): Promise<any[]> {
       const url = `https://api.etherscan.io/v2/api?apikey=${process.env.ETHERSCAN_API_KEY}&module=account&action=txlist&address=${address}&startblock=1&endblock=99999998&page=1&offset=99&sort=desc&chainid=11155111`;
-
       const response = await fetch(url);
 
       if (!response.ok) {
@@ -128,11 +83,6 @@ export class WalletService {
       }
 
       const data = await response.json() as { status: string; message: string; result: any[] };
-
-      // if (data.status !== "1") {
-      //   throw new Error("Etherscan error: " + data.message + " / " + data.result);
-      // }
-
       return data.result;
     }
 
