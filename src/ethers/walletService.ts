@@ -1,24 +1,28 @@
 // wallet functions
-import { ADDRGETNETWORKPARAMS } from 'dns';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
+
 import { ethers } from 'ethers';
 
 export class WalletService {
   // RPC (SEP/ETH)         | DONE
-  // wallet create         |
-  // wallet import         |
-  // wallet balence        |
+  // wallet create         | DONE
+  // wallet import         | DONE
+  // wallet balence        | DONE
   // wallet send/recieve   |
   // wallet transact hist  |
-  // estimate gas fee      |
-  // get price of ETH      |
+  // estimate gas fee      | DONE
+  // get price of ETH      | DONE
 
 
 
     // VARS
     private provider: ethers.Provider | null = null;
     private wallet : ethers.HDNodeWallet | ethers.Wallet | null = null;
-    private SEPOLIA_RPC = 'https://ethereum-sepolia-rpc.publicnode.com';
-    private ETH_RPC = '';
+    private SEPOLIA_RPC = process.env.SEPOLIA_RPC || 'https://ethereum-sepolia-rpc.publicnode.com';
+    private ETH_RPC = process.env.ETH_RPC || '';
+    private ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || '';
 
     async initializeProvider() {
       // either Sepolia or Ethereum
@@ -70,37 +74,66 @@ export class WalletService {
     }
 
     // get wallet transact history
-    async walletTransactHistory(address: string): Promise<any> {
-      const query = `
-        query ($address: Bytes!) {
-          transactions(
-            where: { or: [{ from: $address }, { to: $address }] }
-            orderBy: timestamp
-            orderDirection: desc
-            first: 100
-          ) {
-            id
-            hash
-            from
-            to
-            value
-            timestamp
-            blockNumber
-          }
-        }
-      `;
+    // async walletTransactHistory(address: string): Promise<any> {
+    //   try {
+    //     // Validate address format
+    //     if (!address || !/^0x[a-fA-F0-9]{40}$/.test(address)) {
+    //       console.error('Invalid Ethereum address format');
+    //       return [];
+    //     }
 
-      const response = await fetch('https://api.thegraph.com/subgraphs/name/[SUBGRAPH]', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          query,
-          variables: { address: address.toLowerCase() }
-        })
-      });
+    //     // const url = `https://api-sepolia.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&offset=100&sort=desc&apikey=${this.ETHERSCAN_API_KEY}`;
+    //     const url = `https://api-sepolia.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=asc&apikey=${this.ETHERSCAN_API_KEY}`;
 
-      const data = await response.json() as { data: { transactions: any[] } };
-      return data.data.transactions;
+    //     const response = await fetch(url);
+        
+    //     // Check HTTP response status
+    //     if (!response.ok) {
+    //       console.error(`HTTP error! status: ${response.status}`);
+    //       return [];
+    //     }
+        
+    //     const data = await response.json() as { status: string; message: string; result: any[] };
+        
+    //     // Handle successful response with results
+    //     if (data.status === '1' && Array.isArray(data.result)) {
+    //       return data.result;
+    //     }
+        
+    //     // Handle error cases from Etherscan API
+    //     if (data.status === '0') {
+    //       // "No transactions found" is a valid case, not an error
+    //       if (data.message === 'No transactions found') {
+    //         return [];
+    //       }
+    //       console.error('Etherscan API error:', data.message);
+    //     }
+        
+    //     return [];
+    //   } catch (error) {
+    //     console.error('Error fetching transaction history:', error);
+    //     return [];
+    //   }
+    // }
+
+    async walletTransactHistory(
+      address: string
+    ): Promise<any[]> {
+      const url = `https://api.etherscan.io/v2/api?apikey=${process.env.ETHERSCAN_API_KEY}&module=account&action=txlist&address=${address}&startblock=1&endblock=99999998&page=1&offset=99&sort=desc&chainid=11155111`;
+
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error("HTTP error: " + response.status);
+      }
+
+      const data = await response.json() as { status: string; message: string; result: any[] };
+
+      // if (data.status !== "1") {
+      //   throw new Error("Etherscan error: " + data.message + " / " + data.result);
+      // }
+
+      return data.result;
     }
 
     // estimate gas fee amount
