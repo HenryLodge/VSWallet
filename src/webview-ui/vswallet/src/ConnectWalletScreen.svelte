@@ -1,8 +1,22 @@
 <script lang="ts">
-	export let onNavigate: (screen: string) => void;
-
+	import { walletStore } from '../../../store/walletStore';
+  
+  export let onNavigate: (screen: string) => void;
+  
   let walletName = "";
   let seed = "";
+  
+  async function handleRestore() {
+    if (!walletName.trim() || !seed.trim()) return;
+    
+    try {
+      await walletStore.connectWallet(seed);
+      onNavigate("HomeScreen");
+    } catch (error) {
+      console.error('Failed to restore wallet:', error);
+      // Show error to user
+    }
+  }
 </script>
 
 <main>
@@ -40,6 +54,7 @@
 
         <button 
           class="primary-button"
+          on:click={handleRestore}
           disabled={!walletName.trim() || !seed.trim()}
         >
           Restore
