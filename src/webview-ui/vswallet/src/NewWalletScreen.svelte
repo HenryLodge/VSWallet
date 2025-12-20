@@ -1,20 +1,23 @@
 <script lang="ts">
+  import { walletStore } from '../../../store/walletStore';
   export let onNavigate: (screen: string) => void;
   
-  let currentStep = 1; // 1: name, 2: warning, 3: seed phrase
+  let currentStep = 1;
   let walletName = "";
+  let seedWords: string[] = [];
   let copied = false;
   
-  // Mock seed phrase (to be populated by backend)
-  let seedWords = [
-    "abandon", "ability", "able", "about",
-    "above", "absent", "absorb", "abstract",
-    "absurd", "abuse", "access", "accident"
-  ];
-  
-  function continueFromName() {
+  async function continueFromName() {
     if (walletName.trim()) {
-      currentStep = 2;
+      try {
+        // Create wallet using the service
+        const result = await walletStore.createWallet(walletName);
+        seedWords = result.phrase.split(' ');
+        currentStep = 2;
+      } catch (error) {
+        console.error('Failed to create wallet:', error);
+        // Show error to user
+      }
     }
   }
   
