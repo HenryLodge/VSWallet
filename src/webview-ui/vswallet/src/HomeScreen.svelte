@@ -1,8 +1,31 @@
 <script lang="ts">
+  import { walletStore } from '../../../store/walletStore';
+  import { onMount } from 'svelte';
   export let onNavigate: (screen: string) => void;
-  
+
+
   let WalletETHAmount = 0.0;
   let WalletUSDAmount = 0.0;
+  $: WalletETHAmount = parseFloat($walletStore.balance);
+  $: WalletUSDAmount = parseFloat($walletStore.balanceUsd);
+  
+  onMount(() => {
+    // Update balance when component mounts
+    walletStore.updateBalance();
+    
+    // Set up interval to update balance periodically
+    const interval = setInterval(() => {
+      walletStore.updateBalance();
+    }, 30000); // Every 30 seconds
+    
+    return () => clearInterval(interval);
+  });
+
+
+
+
+
+  
   let PortfolioDeltaPercent = 25;
   let menuOpen = false;
 
