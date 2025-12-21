@@ -1,25 +1,11 @@
 // wallet functions
-import * as dotenv from 'dotenv';
-dotenv.config();
-
 import { ethers } from 'ethers';
 
 export class WalletService {
-  // RPC (SEP/ETH)         | DONE
-  // wallet create         | DONE
-  // wallet import         | DONE
-  // wallet balence        | DONE
-  // wallet send/recieve   | DONE
-  // wallet transact hist  | DONE
-  // estimate gas fee      | DONE
-  // get price of ETH      | DONE
-
   // VARS
   private provider: ethers.Provider | null = null;
   private wallet : ethers.HDNodeWallet | ethers.Wallet | null = null;
-  private SEPOLIA_RPC = process.env.SEPOLIA_RPC || 'https://ethereum-sepolia-rpc.publicnode.com';
-  private ETH_RPC = process.env.ETH_RPC || '';
-  private ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || '';
+  private SEPOLIA_RPC = 'https://ethereum-sepolia-rpc.publicnode.com';
 
   async initializeProvider() {
     // either Sepolia or Ethereum

@@ -71,7 +71,6 @@
     "vite": "^7.1.9"
   },
   "dependencies": {
-    "dotenv": "^17.2.3",
     "ethers": "^6.15.0"
   }
 }
