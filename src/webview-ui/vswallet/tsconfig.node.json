@@ -7,13 +7,14 @@
     "module": "ESNext",
     "types": ["node"],
     "skipLibCheck": true,
+    "emitDeclarationOnly": true,
+    "declaration": true,
 
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
-    "emitDeclarationOnly": true,
 
     /* Linting */
     "strict": true,
