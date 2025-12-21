@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
+import { walletService } from "./ethers/walletService";
 
 export class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "vscodeSidebar.openview";
@@ -24,6 +25,60 @@ export class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
     };
     
     webviewView.webview.html = this.getHtmlContent(webviewView.webview);
+
+    // Handle messages from webview
+    webviewView.webview.onDidReceiveMessage(async (message) => {
+      try {
+        let response;
+        
+        switch (message.command) {
+          case 'walletCreate':
+            response = await walletService.walletCreate();
+            break;
+          
+          case 'walletConnect':
+            response = await walletService.walletConnect(message.data.phrase);
+            break;
+          
+          case 'getWalletBalance':
+            await walletService.initializeProvider();
+            response = await walletService.getWalletBalance(message.data.address);
+            break;
+          
+          case 'transactionSend':
+            response = await walletService.transactionSend(message.data.to, message.data.amount);
+            break;
+          
+          case 'walletTransactHistory':
+            response = await walletService.walletTransactHistory(message.data.address);
+            break;
+          
+          case 'estimateGasFee':
+            response = await walletService.estimateGasFee(message.data.to, message.data.amount);
+            break;
+          
+          case 'getCurrETHPrice':
+            await walletService.initializeProvider();
+            response = await walletService.getCurrETHPrice();
+            break;
+          
+          default:
+            throw new Error(`Unknown command: ${message.command}`);
+        }
+
+        // Send response back to webview
+        webviewView.webview.postMessage({
+          command: message.command,
+          data: response
+        });
+      } catch (error: any) {
+        // Send error back to webview
+        webviewView.webview.postMessage({
+          command: message.command,
+          error: error.message
+        });
+      }
+    });
   }
 
   private getHtmlContent(webview: vscode.Webview): string {
