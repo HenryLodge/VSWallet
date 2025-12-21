@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { walletStore } from '../../../store/walletStore';
+  import { walletStore } from './walletStore';
   export let onNavigate: (screen: string) => void;
   
   let currentStep = 1;

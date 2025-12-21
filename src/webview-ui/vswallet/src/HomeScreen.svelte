@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { walletStore } from '../../../store/walletStore';
+  import { walletStore } from './walletStore';
   import { onMount } from 'svelte';
   export let onNavigate: (screen: string) => void;
 
@@ -21,11 +21,6 @@
     return () => clearInterval(interval);
   });
 
-
-
-
-
-  
   let PortfolioDeltaPercent = 25;
   let menuOpen = false;
 
