@@ -21,7 +21,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// ALL WELCOME PAGE CODE
 
 	// ALL SIDEBAR CODE
-	const provider = new CustomSidebarViewProvider(context.extensionUri);
+	const provider = new CustomSidebarViewProvider(context.extensionUri, context);
 
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider(
