@@ -7,6 +7,8 @@ interface WalletState {
   balance: string;
   balanceUsd: string;
   isConnected: boolean;
+  walletId: string | null;
+  walletName: string | null;
 }
 
 function createWalletStore() {
@@ -14,7 +16,9 @@ function createWalletStore() {
     address: null,
     balance: '0.0',
     balanceUsd: '0.00',
-    isConnected: false
+    isConnected: false,
+    walletId: null,
+    walletName: null
   });
 
   return {
@@ -22,12 +26,13 @@ function createWalletStore() {
     
     async createWallet(name: string): Promise<{ address: string; phrase: string }> {
       try {
-        const result = await walletService.walletCreate();
+        const result = await walletService.walletCreate(name);
         
         update(state => ({
           ...state,
           address: result.address,
-          isConnected: true
+          isConnected: true,
+          walletName: name
         }));
         
         setTimeout(() => {
@@ -41,14 +46,15 @@ function createWalletStore() {
       }
     },
     
-    async connectWallet(phrase: string): Promise<void> {
+    async connectWallet(phrase: string, name: string = 'Imported Wallet'): Promise<void> {
       try {
-        const address = await walletService.walletConnect(phrase);
+        const address = await walletService.walletConnect(phrase, name);
         
         update(state => ({
           ...state,
           address,
-          isConnected: true
+          isConnected: true,
+          walletName: name
         }));
         
         setTimeout(() => {
@@ -57,6 +63,52 @@ function createWalletStore() {
       } catch (error) {
         console.error('Failed to connect wallet:', error);
         throw error;
+      }
+    },
+
+    async switchWallet(walletId: string): Promise<void> {
+      try {
+        await walletService.setActiveWallet(walletId);
+        const activeWallet = await walletService.getActiveWallet();
+        
+        if (activeWallet) {
+          update(state => ({
+            ...state,
+            address: activeWallet.address,
+            isConnected: true,
+            walletId: activeWallet.id,
+            walletName: activeWallet.name
+          }));
+          
+          setTimeout(() => {
+            walletStore.updateBalance();
+          }, 0);
+        }
+      } catch (error) {
+        console.error('Failed to switch wallet:', error);
+        throw error;
+      }
+    },
+
+    async loadActiveWallet(): Promise<void> {
+      try {
+        const activeWallet = await walletService.getActiveWallet();
+        
+        if (activeWallet) {
+          update(state => ({
+            ...state,
+            address: activeWallet.address,
+            isConnected: true,
+            walletId: activeWallet.id,
+            walletName: activeWallet.name
+          }));
+          
+          setTimeout(() => {
+            walletStore.updateBalance();
+          }, 0);
+        }
+      } catch (error) {
+        console.error('Failed to load active wallet:', error);
       }
     },
     
@@ -85,7 +137,9 @@ function createWalletStore() {
         address: null,
         balance: '0.0',
         balanceUsd: '0.00',
-        isConnected: false
+        isConnected: false,
+        walletId: null,
+        walletName: null
       });
     }
   };

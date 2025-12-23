@@ -70,16 +70,28 @@ export class WalletService {
     });
   }
 
-  async walletCreate(): Promise<{address: string; phrase: string; privKey: string}> {
-    return this.sendMessage('walletCreate');
+  async walletCreate(name?: string): Promise<{address: string; phrase: string; privKey: string}> {
+    return this.sendMessage('walletCreate', { name });
   }
 
-  async walletConnect(phrase: string): Promise<string> {
-    return this.sendMessage('walletConnect', { phrase });
+  async walletConnect(phrase: string, name?: string): Promise<string> {
+    return this.sendMessage('walletConnect', { phrase, name });
   }
 
   async getWalletBalance(address: string): Promise<string> {
     return this.sendMessage('getWalletBalance', { address });
+  }
+
+  async getWallets(): Promise<any[]> {
+    return this.sendMessage('getWallets');
+  }
+
+  async setActiveWallet(walletId: string): Promise<void> {
+    return this.sendMessage('setActiveWallet', { walletId });
+  }
+
+  async getActiveWallet(): Promise<any> {
+    return this.sendMessage('getActiveWallet');
   }
 
   async transactionSend(to: string, amount: string): Promise<string> {

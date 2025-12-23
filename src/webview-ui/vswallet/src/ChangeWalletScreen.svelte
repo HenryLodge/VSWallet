@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+  import { walletService } from './walletService';
+  import { walletStore } from './walletStore';
 	export let onNavigate: (screen: string) => void;
 	
 	type Wallet = {
@@ -12,13 +15,72 @@
 	};
 	
 	let wallets: Wallet[] = [];
+  let loading = true;
+
+  onMount(async () => {
+    await loadWallets();
+  });
+
+  async function loadWallets() {
+    try {
+      loading = true;
+      const storedWallets = await walletService.getWallets();
+      
+      console.log('Loaded wallets from storage:', storedWallets);
+      
+      // First, load wallets without balances for immediate display
+      wallets = storedWallets.map((w: any) => ({
+        id: w.id,
+        name: w.name,
+        address: w.address,
+        balance: '...',
+        currency: 'ETH',
+        usdValue: '...',
+        isActive: w.isActive
+      }));
+      
+      loading = false;
+      
+      // Then fetch balances in the background
+      for (let i = 0; i < storedWallets.length; i++) {
+        const w = storedWallets[i];
+        try {
+          const balance = await walletService.getWalletBalance(w.address);
+          const ethPrice = await walletService.getCurrETHPrice();
+          const usdValue = (parseFloat(balance) * ethPrice).toFixed(2);
+          
+          wallets[i] = {
+            ...wallets[i],
+            balance: parseFloat(balance).toFixed(4),
+            usdValue: `$${usdValue}`
+          };
+        } catch (error) {
+          console.error(`Error loading balance for ${w.name}:`, error);
+          wallets[i] = {
+            ...wallets[i],
+            balance: '0.0000',
+            usdValue: '$0.00'
+          };
+        }
+      }
+    } catch (error) {
+      console.error('Error loading wallets:', error);
+      loading = false;
+    }
+  }
 	
 	function formatAddress(address: string): string {
 		return `${address.slice(0, 6)}...${address.slice(-4)}`;
 	}
 	
-	function selectWallet(walletId: number) {
-		console.log('Selected wallet:', walletId);
+	async function selectWallet(walletId: string) {
+		try {
+      await walletStore.switchWallet(walletId);
+      onNavigate("HomeScreen");
+    } catch (error) {
+      console.error('Failed to switch wallet:', error);
+      alert('Failed to switch wallet: ' + (error as Error).message);
+    }
 	}
 </script>
 
@@ -34,7 +96,11 @@
   <div class="wallet-container">
     <h1 class="page-title">Change Active Wallet</h1>
 
-    {#if wallets.length === 0}
+    {#if loading}
+      <div class="loading-state">
+        <p>Loading wallets...</p>
+      </div>
+    {:else if wallets.length === 0}
       <div class="empty-state">
         <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
           <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
@@ -48,7 +114,7 @@
     {:else}
       <div class="wallets-list">
         {#each wallets as wallet}
-          <div class="wallet-card" on:click={() => selectWallet(wallet.id)} on:keypress={(e) => e.key === 'Enter' && selectWallet(wallet.id)} role="button" tabindex="0">
+          <div class="wallet-card" on:click={() => selectWallet(wallet.id.toString())} on:keypress={(e) => e.key === 'Enter' && selectWallet(wallet.id.toString())} role="button" tabindex="0">
             <div class="wallet-icon" class:active={wallet.isActive}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>

@@ -3,12 +3,19 @@ import * as path from "path";
 import * as fs from "fs";
 import { walletService } from "./ethers/walletService";
 
+interface StoredWallet {
+  id: string;
+  name: string;
+  address: string;
+  isActive: boolean;
+}
+
 export class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "vscodeSidebar.openview";
 
   private _view?: vscode.WebviewView;
 
-  constructor(private readonly _extensionUri: vscode.Uri) {}
+  constructor(private readonly _extensionUri: vscode.Uri, private readonly _context: vscode.ExtensionContext) {}
 
   resolveWebviewView(
     webviewView: vscode.WebviewView,
@@ -34,10 +41,29 @@ export class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
         switch (message.command) {
           case 'walletCreate':
             response = await walletService.walletCreate();
+            const walletName = message.data?.name || 'My Wallet';
+            await this.addWallet(walletName, response.address, response.phrase, true);
+            console.log('Wallet created and stored');
             break;
           
           case 'walletConnect':
             response = await walletService.walletConnect(message.data.phrase);
+            const importedWalletName = message.data?.name || 'Imported Wallet';
+            await this.addWallet(importedWalletName, response, message.data.phrase, true);
+            break;
+
+          case 'getWallets':
+            response = await this.getWallets();
+            console.log('Sending wallets to webview:', response);
+            break;
+
+          case 'setActiveWallet':
+            await this.setActiveWallet(message.data.walletId);
+            response = { success: true };
+            break;
+          
+          case 'getActiveWallet':
+            response = await this.getActiveWallet();
             break;
           
           case 'getWalletBalance':
@@ -46,6 +72,15 @@ export class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
             break;
           
           case 'transactionSend':
+            const activeWallet = await this.getActiveWallet();
+            if (!activeWallet) {
+              throw new Error('No active wallet');
+            }
+            const seed = await this._context.secrets.get(`wallet_seed_${activeWallet.id}`);
+            if (!seed) {
+              throw new Error('Wallet seed not found');
+            }
+            await walletService.walletConnect(seed);
             response = await walletService.transactionSend(message.data.to, message.data.amount);
             break;
           
@@ -79,6 +114,54 @@ export class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
         });
       }
     });
+  }
+
+  private async addWallet(name: string, address: string, seedPhrase: string, setAsActive: boolean = false): Promise<void> {
+    const wallets = await this.getWallets();
+    console.log('Current wallets before adding:', wallets.length);
+    const walletId = `wallet_${Date.now()}`;
+    
+    if (setAsActive) {
+      wallets.forEach(w => w.isActive = false);
+    }
+    
+    const newWallet: StoredWallet = {
+      id: walletId,
+      name: name,
+      address: address,
+      isActive: setAsActive
+    };
+    
+    wallets.push(newWallet);
+    await this._context.globalState.update('wallets', wallets);
+    await this._context.secrets.store(`wallet_seed_${walletId}`, seedPhrase);
+    console.log('Wallet added, total wallets now:', wallets.length);
+    console.log('New wallet:', newWallet);
+  }
+
+  private async getWallets(): Promise<StoredWallet[]> {
+    return this._context.globalState.get<StoredWallet[]>('wallets', []);
+  }
+
+  private async setActiveWallet(walletId: string): Promise<void> {
+    const wallets = await this.getWallets();
+    wallets.forEach(w => w.isActive = false);
+    
+    const wallet = wallets.find(w => w.id === walletId);
+    if (wallet) {
+      wallet.isActive = true;
+      await this._context.globalState.update('wallets', wallets);
+      
+      const seed = await this._context.secrets.get(`wallet_seed_${walletId}`);
+      if (seed) {
+        await walletService.walletConnect(seed);
+      }
+    }
+  }
+
+  private async getActiveWallet(): Promise<StoredWallet | null> {
+    const wallets = await this.getWallets();
+    return wallets.find(w => w.isActive) || null;
   }
 
   private getHtmlContent(webview: vscode.Webview): string {
