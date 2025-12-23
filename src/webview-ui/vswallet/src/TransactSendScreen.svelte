@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { walletService } from './walletService';
   export let onNavigate: (screen: string) => void;
   
   let recipientAddress = '';
@@ -22,13 +23,38 @@
   }
   
   function handleSend() {
+    if (!recipientAddress.trim()) {
+      alert('Please enter a recipient address');
+      return;
+    }
+    
+    if (!amount || parseFloat(amount) <= 0) {
+      alert('Please enter a valid amount');
+      return;
+    }
+    
     showConfirmModal = true;
   }
   
-  function confirmSend() {
-    console.log('Sending transaction:', { recipientAddress, amount, currency, note });
-    showConfirmModal = false;
-    // Add your actual send logic here
+  async function confirmSend() {
+    try {
+      showConfirmModal = false;
+      
+      console.log('Sending transaction...');
+      
+      const txHash = await walletService.transactionSend(recipientAddress, amount);
+      
+      console.log('Transaction sent! Hash:', txHash);
+      
+      // Show success message
+      alert(`Transaction sent successfully!\nTx Hash: ${txHash}`);
+      
+      // Navigate back to home
+      onNavigate("HomeScreen");
+    } catch (error) {
+      console.error('Transaction failed:', error);
+      alert('Transaction failed: ' + (error as Error).message);
+    }
   }
   
   function cancelSend() {
