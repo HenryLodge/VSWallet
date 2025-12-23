@@ -112,7 +112,7 @@ export class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
     // Add CSP meta tag if not present
     const nonce = getNonce();
     if (!html.includes('<meta http-equiv="Content-Security-Policy"')) {
-      const csp = `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}'; img-src ${webview.cspSource} https:;">`;
+      const csp = `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}'; img-src ${webview.cspSource} https:; connect-src ${webview.cspSource};">`;
       html = html.replace('<head>', `<head>\n    ${csp}`);
     }
 
