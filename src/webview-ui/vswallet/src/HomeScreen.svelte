@@ -10,6 +10,7 @@
   $: WalletUSDAmount = parseFloat($walletStore.balanceUsd);
   
   onMount(() => {
+    walletStore.loadActiveWallet();
     // Update balance when component mounts
     if ($walletStore.isConnected && $walletStore.address) {
       walletStore.updateBalance();
