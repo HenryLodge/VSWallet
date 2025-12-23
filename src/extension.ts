@@ -30,6 +30,29 @@ export function activate(context: vscode.ExtensionContext) {
 		)
 	);
 
+	context.subscriptions.push(
+		vscode.commands.registerCommand('vswallet.clearAllData', async () => {
+			const confirm = await vscode.window.showWarningMessage(
+				'Are you sure you want to clear all wallet data? This cannot be undone.',
+				'Yes',
+				'No'
+			);
+			
+			if (confirm === 'Yes') {
+				// Clear all wallets
+				await context.globalState.update('wallets', []);
+				
+				// Clear all secrets (you'll need to get wallet IDs first)
+				const wallets = context.globalState.get<any[]>('wallets', []);
+				for (const wallet of wallets) {
+					await context.secrets.delete(`wallet_seed_${wallet.id}`);
+				}
+				
+				vscode.window.showInformationMessage('All wallet data has been cleared');
+			}
+		})
+	);
+
 	// Command has been defined in the package.json file
 	// Provide the implementation of the command with registerCommand
 	// CommandId parameter must match the command field in package.json
