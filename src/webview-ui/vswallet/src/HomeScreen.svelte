@@ -11,12 +11,16 @@
   
   onMount(() => {
     // Update balance when component mounts
-    walletStore.updateBalance();
+    if ($walletStore.isConnected && $walletStore.address) {
+      walletStore.updateBalance();
+    }
     
     // Set up interval to update balance periodically
     const interval = setInterval(() => {
-      walletStore.updateBalance();
-    }, 30000); // Every 30 seconds
+      if ($walletStore.isConnected && $walletStore.address) {
+        walletStore.updateBalance();
+      }
+    }, 30000);
     
     return () => clearInterval(interval);
   });
