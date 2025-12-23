@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store';
+import { writable, get } from 'svelte/store';
 import { walletService } from './walletService';
 
 // state interface
@@ -21,48 +21,62 @@ function createWalletStore() {
     subscribe,
     
     async createWallet(name: string): Promise<{ address: string; phrase: string }> {
-      const result = await walletService.walletCreate();
-      
-      update(state => ({
-        ...state,
-        address: result.address,
-        isConnected: true
-      }));
-      
-      await this.updateBalance();
-      return result;
+      try {
+        const result = await walletService.walletCreate();
+        
+        update(state => ({
+          ...state,
+          address: result.address,
+          isConnected: true
+        }));
+        
+        setTimeout(() => {
+          walletStore.updateBalance();
+        }, 0);
+        
+        return result;
+      } catch (error) {
+        console.error('Failed to create wallet:', error);
+        throw error;
+      }
     },
     
     async connectWallet(phrase: string): Promise<void> {
-      const address = await walletService.walletConnect(phrase);
-      
-      update(state => ({
-        ...state,
-        address,
-        isConnected: true
-      }));
-      
-      await this.updateBalance();
+      try {
+        const address = await walletService.walletConnect(phrase);
+        
+        update(state => ({
+          ...state,
+          address,
+          isConnected: true
+        }));
+        
+        setTimeout(() => {
+          walletStore.updateBalance();
+        }, 0);
+      } catch (error) {
+        console.error('Failed to connect wallet:', error);
+        throw error;
+      }
     },
     
     async updateBalance(): Promise<void> {
-      const state = await new Promise<WalletState>(resolve => {
-        const unsubscribe = subscribe(s => {
-          unsubscribe();
-          resolve(s);
-        });
-      });
-      
-      if (state.address) {
-        const balance = await walletService.getWalletBalance(state.address);
-        const ethPrice = await walletService.getCurrETHPrice();
-        const balanceUsd = (parseFloat(balance) * ethPrice).toFixed(2);
+      try {
+        const state = get(walletStore);
         
-        update(s => ({
-          ...s,
-          balance,
-          balanceUsd
-        }));
+        if (state.address) {
+          const balance = await walletService.getWalletBalance(state.address);
+          const ethPrice = await walletService.getCurrETHPrice();
+          const balanceUsd = (parseFloat(balance) * ethPrice).toFixed(2);
+          
+          update(s => ({
+            ...s,
+            balance,
+            balanceUsd
+          }));
+        }
+      } catch (error) {
+        console.error('Failed to update balance:', error);
       }
     },
     
