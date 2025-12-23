@@ -10,11 +10,10 @@
     if (!walletName.trim() || !seed.trim()) return;
     
     try {
-      await walletStore.connectWallet(seed);
+      await walletStore.connectWallet(seed, walletName);
       onNavigate("HomeScreen");
     } catch (error) {
       console.error('Failed to restore wallet:', error);
-      // Show error to user
     }
   }
 </script>
