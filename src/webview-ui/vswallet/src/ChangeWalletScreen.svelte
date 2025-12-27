@@ -28,43 +28,19 @@
       
       console.log('Loaded wallets from storage:', storedWallets);
       
-      // First, load wallets without balances for immediate display
       wallets = storedWallets.map((w: any) => ({
         id: w.id,
         name: w.name,
         address: w.address,
-        balance: '...',
-        currency: 'ETH',
-        usdValue: '...',
+        balance: '',
+        currency: '',
+        usdValue: '',
         isActive: w.isActive
       }));
       
-      loading = false;
-      
-      // Then fetch balances in the background
-      for (let i = 0; i < storedWallets.length; i++) {
-        const w = storedWallets[i];
-        try {
-          const balance = await walletService.getWalletBalance(w.address);
-          const ethPrice = await walletService.getCurrETHPrice();
-          const usdValue = (parseFloat(balance) * ethPrice).toFixed(2);
-          
-          wallets[i] = {
-            ...wallets[i],
-            balance: parseFloat(balance).toFixed(4),
-            usdValue: `$${usdValue}`
-          };
-        } catch (error) {
-          console.error(`Error loading balance for ${w.name}:`, error);
-          wallets[i] = {
-            ...wallets[i],
-            balance: '0.0000',
-            usdValue: '$0.00'
-          };
-        }
-      }
     } catch (error) {
       console.error('Error loading wallets:', error);
+    } finally {
       loading = false;
     }
   }
@@ -125,14 +101,10 @@
             <div class="wallet-details">
               <div class="wallet-header">
                 <span class="wallet-name">{wallet.name}</span>
-                <span class="wallet-balance">
-                  {wallet.balance} {wallet.currency}
-                </span>
               </div>
 
               <div class="wallet-info">
                 <span class="wallet-address">{formatAddress(wallet.address)}</span>
-                <span class="wallet-usd">{wallet.usdValue}</span>
               </div>
 
               {#if wallet.isActive}
@@ -141,7 +113,7 @@
                 </div>
               {/if}
             </div>
-          </div>
+          </div>          
         {/each}
       </div>
     {/if}
@@ -317,13 +289,6 @@
     color: var(--vscode-foreground);
   }
 
-  .wallet-balance {
-    font-size: 14px;
-    font-weight: 600;
-    font-family: 'Courier New', monospace;
-    color: var(--vscode-foreground);
-  }
-
   .wallet-info {
     display: flex;
     justify-content: space-between;
@@ -333,11 +298,6 @@
   .wallet-address {
     font-size: 12px;
     font-family: 'Courier New', monospace;
-    color: var(--vscode-descriptionForeground);
-  }
-
-  .wallet-usd {
-    font-size: 12px;
     color: var(--vscode-descriptionForeground);
   }
 
