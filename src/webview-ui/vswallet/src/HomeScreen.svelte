@@ -58,6 +58,11 @@
     selectedTimePeriod = period;
     console.log('Time period selected:', period);
   }
+
+  function toFixedNoRounding(num: number, decimals: number): string {
+    const factor = Math.pow(10, decimals);
+    return (Math.floor(num * factor) / factor).toFixed(decimals);
+  }
 </script>
 
 <main>
@@ -139,7 +144,7 @@
       />
       
       <text x="80" y="65" class="wallet-eth-amount">
-        {WalletETHAmount.toFixed(1)} ETH
+        {toFixedNoRounding(WalletETHAmount, 4)} ETH
       </text>
       <text x="80" y="80" class="wallet-usd-amount">
         ${WalletUSDAmount.toFixed(2)} USD
