@@ -1,15 +1,18 @@
 <script lang="ts">
+  import { walletStore } from './walletStore';
   export let onNavigate: (screen: string) => void;
   
-  let walletAddress = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb';
+  $: walletAddress = $walletStore.address || '';
   let copied = false;
   
   function copyAddress() {
-    navigator.clipboard.writeText(walletAddress);
-    copied = true;
-    setTimeout(() => {
-      copied = false;
-    }, 2000);
+    if (walletAddress) {
+      navigator.clipboard.writeText(walletAddress);
+      copied = true;
+      setTimeout(() => {
+        copied = false;
+      }, 2000);
+    }
   }
 </script>
 
