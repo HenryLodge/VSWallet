@@ -1,9 +1,30 @@
 <script lang="ts">
   import { walletStore } from './walletStore';
+  import QRCode from 'qrcode';
   export let onNavigate: (screen: string) => void;
   
   $: walletAddress = $walletStore.address || '';
   let copied = false;
+  let dataUrl = '';
+
+  $: if (walletAddress) {
+    generateQRCode(walletAddress);
+  }
+
+  async function generateQRCode(address: string) {
+    try {
+      dataUrl = await QRCode.toDataURL(address, {
+        width: 200,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      });
+    } catch (error) {
+      console.error('Error generating QR code:', error);
+    }
+  }
   
   function copyAddress() {
     if (walletAddress) {
@@ -29,18 +50,24 @@
 
   <div class="form-container">
     <div class="qr-container">
-      <div class="qr-placeholder">
-        <svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <rect x="3" y="3" width="7" height="7" rx="1"/>
-          <rect x="14" y="3" width="7" height="7" rx="1"/>
-          <rect x="3" y="14" width="7" height="7" rx="1"/>
-          <rect x="14" y="14" width="7" height="7" rx="1"/>
-          <path d="M5 5h3v3H5z"/>
-          <path d="M16 5h3v3h-3z"/>
-          <path d="M5 16h3v3H5z"/>
-          <path d="M16 16h3v3h-3z"/>
-        </svg>
-      </div>
+      {#if dataUrl && walletAddress}
+        <div class="qr-code">
+          <img src={dataUrl} alt="QRCode"/>
+        </div>
+      {:else}
+        <div class="qr-placeholder">
+          <svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="7" height="7" rx="1"/>
+            <path d="M5 5h3v3H5z"/>
+            <path d="M16 5h3v3h-3z"/>
+            <path d="M5 16h3v3H5z"/>
+            <path d="M16 16h3v3h-3z"/>
+          </svg>
+        </div>
+      {/if}
       <p class="qr-label">Scan QR Code</p>
     </div>
 
@@ -168,6 +195,18 @@
     font-weight: 500;
     color: var(--vscode-descriptionForeground);
     letter-spacing: 0.3px;
+  }
+
+  .qr-code {
+    width: 200px;
+    height: 200px;
+    background-color: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    box-sizing: border-box;
   }
 
   .address-section {
