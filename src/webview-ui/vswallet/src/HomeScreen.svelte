@@ -168,29 +168,6 @@
       Receive
     </button>
   </div>
-
-  <div class="stats-container">
-    <div class="stat-card">
-      <div class="stat-label">Transactions (90d)</div>
-      <div class="stat-value">{transactionsLast90Days}</div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-label">Gas Fees</div>
-      <div class="stat-value">{totalGasFeesETH.toFixed(4)} ETH</div>
-      <div class="stat-subvalue">${totalGasFeesUSD.toFixed(2)}</div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-label">Avg Transaction</div>
-      <div class="stat-value">{averageTransactionValue.toFixed(3)} ETH</div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-label">Last Activity</div>
-      <div class="stat-value small">{lastTransactionDate}</div>
-    </div>
-  </div>
 </main>
 
 <style>
@@ -398,49 +375,5 @@
   .action-button.receive:hover svg {
     transform: translateY(-2px);
     outline: 0;
-  }
-
-  .stats-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    width: 90%;
-    max-width: 320px;
-    margin-top: 24px;
-  }
-
-  .stat-card {
-    background-color: var(--vscode-input-background);
-    border: 1px solid var(--vscode-input-border);
-    border-radius: 8px;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .stat-label {
-    font-size: 10px;
-    font-weight: 400;
-    color: var(--vscode-descriptionForeground);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .stat-value {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--vscode-foreground);
-    letter-spacing: -0.5px;
-  }
-
-  .stat-value.small {
-    font-size: 13px;
-  }
-
-  .stat-subvalue {
-    font-size: 10px;
-    font-weight: 400;
-    color: var(--vscode-descriptionForeground);
   }
 </style>
