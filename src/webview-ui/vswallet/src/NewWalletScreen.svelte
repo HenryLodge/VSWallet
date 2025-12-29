@@ -405,6 +405,7 @@
     font-size: 12px;
     color: var(--vscode-foreground);
     line-height: 1.5;
+    text-align: left;
   }
 
   .warning-point svg {
