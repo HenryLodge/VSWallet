@@ -9,20 +9,20 @@
   
   async function continueFromName() {
     if (walletName.trim()) {
-      try {
-        // Create wallet using the service
-        const result = await walletStore.createWallet(walletName);
-        seedWords = result.phrase.split(' ');
-        currentStep = 2;
-      } catch (error) {
-        console.error('Failed to create wallet:', error);
-        // Show error to user
-      }
+      currentStep = 2;
     }
   }
   
-  function acknowledgeWarning() {
-    currentStep = 3;
+  async function acknowledgeWarning() {
+    try {
+      // Create wallet using the service
+      const result = await walletStore.createWallet(walletName);
+      seedWords = result.phrase.split(' ');
+      currentStep = 3;
+    } catch (error) {
+      console.error('Failed to create wallet:', error);
+      // Show error to user
+    }
   }
   
   function copySeedPhrase() {
