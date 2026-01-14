@@ -87,9 +87,6 @@
         <button class="menu-item" on:click={() => onNavigate("ChangeWalletScreen")}>
           Change Wallet
         </button>
-        <button class="menu-item" on:click={() => onNavigate("ContactsScreen")}>
-          Your Contacts
-        </button>
       </div>
     {/if}
   </div>
