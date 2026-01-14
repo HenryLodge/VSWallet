@@ -57,16 +57,11 @@ export class WalletService {
   }
 
   // get wallet transact history
-  async walletTransactHistory(address: string): Promise<any[]> {
-    const url = `https://api.etherscan.io/v2/api?apikey=${process.env.ETHERSCAN_API_KEY}&module=account&action=txlist&address=${address}&startblock=1&endblock=99999998&page=1&offset=99&sort=desc&chainid=11155111`;
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      throw new Error("HTTP error: " + response.status);
+  async getTransactionData(txHash: string): Promise<ethers.TransactionReceipt | null> {
+    if (!this.provider) {
+      await this.initializeProvider();
     }
-
-    const data = await response.json() as { status: string; message: string; result: any[] };
-    return data.result;
+    return await this.provider!.getTransactionReceipt(txHash);
   }
 
   // estimate gas fee amount
