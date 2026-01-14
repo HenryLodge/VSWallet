@@ -1,16 +1,21 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+  import { walletService } from './walletService';
+  import { walletStore } from './walletStore';
 	export let onNavigate: (screen: string) => void;
 	
 	type Transaction = {
 		id: number;
-		type: 'sent' | 'received';
-		address: string;
-		amount: string;
-		currency: string;
-		usdValue: string;
-		date: string;
-		time: string;
-		status: 'confirmed' | 'pending';
+    type: 'sent' | 'received';
+    address: string;
+    amount: string;
+    currency: string;
+    usdValue: string;
+    date: string;
+    time: string;
+    status: 'confirmed' | 'pending' | 'failed';
+    hash: string;
+    note?: string;
 	};
 	
 	let transactions: Transaction[] = [];
