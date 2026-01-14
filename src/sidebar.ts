@@ -10,6 +10,17 @@ interface StoredWallet {
   isActive: boolean;
 }
 
+interface StoredTransaction {
+  hash: string;
+  to: string;
+  from: string;
+  value: string;
+  time: number;
+  status: 'pending' | 'confirmed' | 'failed';
+  gas?: string;
+  note?: string;
+}
+
 export class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "vscodeSidebar.openview";
 
