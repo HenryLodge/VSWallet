@@ -60,7 +60,7 @@
         const usdValue = (amountInEth * ethPrice).toFixed(2);
         
         // Create date from timestamp (handle both seconds and milliseconds)
-        const timestamp = tx.timestamp < 10000000000 ? tx.timestamp * 1000 : tx.timestamp;
+        const timestamp = tx.time < 10000000000 ? tx.time * 1000 : tx.time;
         const date = new Date(timestamp);
         console.log(date);
         
@@ -108,11 +108,7 @@
   <div class="transactions-container">
     <h1 class="page-title">Transaction History</h1>
 
-    {#if loading}
-      <div class="empty-state">
-        <p class="empty-text">Loading transactions...</p>
-      </div>
-    {:else if error}
+    {#if error}
       <div class="empty-state">
         <p class="empty-text" style="color: #ef4444;">{error}</p>
       </div>
