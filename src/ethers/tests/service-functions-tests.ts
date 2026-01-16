@@ -29,33 +29,13 @@ async function testWallet() {
     const balance = await walletService.getWalletBalance(newWallet.address);
     console.log('✓ Balance:', balance, 'ETH\n');
 
-    // 4. Get Transactions
-    console.log('4. Getting transaction history...\n');
-
-    console.log('4a. Testing with known active address (WETH contract)...');
-    const activeAddress = '0xbd4d5b8475bcb71e06a65224ccfd6e8f2e6c6279';
-    let transactions = await walletService.walletTransactHistory(activeAddress);
-    console.log('   API returned:', transactions?.length || 0, 'transactions');
-
-    if (transactions && transactions.length > 0) {
-      console.log('   ✓ SUCCESS! Sample transaction:');
-      console.log('     Hash:', transactions[0].hash);
-      console.log('     Block:', transactions[0].blockNumber);
-      console.log('     From:', transactions[0].from.substring(0, 10) + '...');
-      console.log('     To:', transactions[0].to?.substring(0, 10) + '...');
-      console.log('     Value:', ethers.formatEther(transactions[0].value), 'ETH');
-    } else {
-      console.log('   ⚠️  WARNING: No transactions found for active address');
-      console.log('   This might indicate the API key is not working properly\n');
-    }
-
-    // 5. Get ETH price
-    console.log('5. Getting current ETH price...');
+    // 4. Get ETH price
+    console.log('4. Getting current ETH price...');
     const ethPrice = await walletService.getCurrETHPrice();
     console.log('✓ ETH Price: $', ethPrice, '\n');
 
-    // 6. Estimate gas fee (example)
-    console.log('6. Estimating gas fee for 0.001 ETH transfer...');
+    // 5. Estimate gas fee (example)
+    console.log('5. Estimating gas fee for 0.001 ETH transfer...');
     const gasFee = await walletService.estimateGasFee(
       '0x12C937c6E4F52C965b3984A97ccb82AC5B692158', // random address
       '0.001'
@@ -64,8 +44,8 @@ async function testWallet() {
     console.log('  ETH:', gasFee.eth);
     console.log('  USD: $', gasFee.usd, '\n');
 
-    // 7. Reconnect with seed phrase
-    console.log('7. Reconnecting wallet with seed phrase...');
+    // 6. Reconnect with seed phrase
+    console.log('6. Reconnecting wallet with seed phrase...');
     const reconnectedAddress = await walletService.walletConnect(newWallet.phrase);
     console.log('✓ Reconnected to:', reconnectedAddress);
     console.log('Match:', reconnectedAddress === newWallet.address ? '✓' : '✗', '\n');
