@@ -92,11 +92,25 @@ export class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
               throw new Error('Wallet seed not found');
             }
             await walletService.walletConnect(seed);
-            response = await walletService.transactionSend(message.data.to, message.data.amount);
-            break;
-          
-          case 'walletTransactHistory':
-            response = await walletService.walletTransactHistory(message.data.address);
+            
+            const txHash = await walletService.transactionSend(message.data.to, message.data.amount);
+            console.log("here: " + parseFloat(message.data.amount) * 1e18);
+
+            const transaction: StoredTransaction = {
+              hash: txHash,
+              from: activeWallet.address,
+              to: message.data.to,
+              value: (parseFloat(message.data.amount) * 1e18).toString(),
+              time: Date.now(),
+              status: 'pending',
+              note: message.data.note
+            };
+            
+            await this.saveTransaction(activeWallet.id, transaction);
+            
+            this.monitorTransaction(activeWallet.id, txHash);
+            
+            response = txHash;
             break;
           
           case 'estimateGasFee':
@@ -106,6 +120,14 @@ export class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
           case 'getCurrETHPrice':
             await walletService.initializeProvider();
             response = await walletService.getCurrETHPrice();
+            break;
+          
+          case 'getTransactionHistory':
+            const wallet = await this.getActiveWallet();
+            if (!wallet) {
+              throw new Error('No active wallet');
+            }
+            response = await this.getTransactions(wallet.id);
             break;
           
           default:
@@ -173,6 +195,75 @@ export class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
   private async getActiveWallet(): Promise<StoredWallet | null> {
     const wallets = await this.getWallets();
     return wallets.find(w => w.isActive) || null;
+  }
+
+  private async saveTransaction(walletId: string, transaction: StoredTransaction): Promise<void> {
+    const key = `wallet_transactions_${walletId}`;
+    const existingTransactions = await this.getTransactions(walletId);
+    console.log(transaction.value);
+    // Add new transaction at the beginning (most recent first)
+    existingTransactions.unshift(transaction);
+    
+    // Store in global state (persists across sessions)
+    await this._context.globalState.update(key, existingTransactions);
+  }
+
+  // Get all transactions for a wallet
+  private async getTransactions(walletId: string): Promise<StoredTransaction[]> {
+    const key = `wallet_transactions_${walletId}`;
+    const transactions = this._context.globalState.get<StoredTransaction[]>(key);
+    return transactions || [];
+  }
+
+  // Update transaction status (e.g., from pending to confirmed)
+  private async updateTransactionStatus(
+    walletId: string, 
+    txHash: string, 
+    status: 'confirmed' | 'failed',
+    gasUsed?: string
+  ): Promise<void> {
+    const transactions = await this.getTransactions(walletId);
+    const txIndex = transactions.findIndex(tx => tx.hash === txHash);
+    
+    if (txIndex !== -1) {
+      transactions[txIndex].status = status;
+      if (gasUsed) {
+        transactions[txIndex].gas = gasUsed;
+      }
+      
+      const key = `wallet_transactions_${walletId}`;
+      await this._context.globalState.update(key, transactions);
+    }
+  }
+
+  private async monitorTransaction(walletId: string, txHash: string): Promise<void> {
+    try {
+      await walletService.initializeProvider();
+      
+      const maxAttempts = 60;
+      let attempts = 0;
+      
+      while (attempts < maxAttempts) {
+        try {
+          const receipt = await walletService.getTransactionData(txHash);
+          
+          if (receipt) {
+            const status = receipt.status === 1 ? 'confirmed' : 'failed';
+            const gasUsed = receipt.gasUsed.toString();
+            
+            await this.updateTransactionStatus(walletId, txHash, status, gasUsed);
+            break;
+          }
+        } catch (error) {
+          console.log('Transaction not yet mined, retrying...');
+        }
+        
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        attempts++;
+      }
+    } catch (error) {
+      console.error('Error monitoring transaction:', error);
+    }
   }
 
   private getHtmlContent(webview: vscode.Webview): string {
