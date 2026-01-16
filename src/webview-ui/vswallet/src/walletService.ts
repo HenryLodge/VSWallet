@@ -94,12 +94,12 @@ export class WalletService {
     return this.sendMessage('getActiveWallet');
   }
 
-  async transactionSend(to: string, amount: string): Promise<string> {
-    return this.sendMessage('transactionSend', { to, amount });
+  async transactionSend(to: string, amount: string, note?: string): Promise<string> {
+    return this.sendMessage('transactionSend', { to, amount, note });
   }
 
-  async walletTransactHistory(address: string): Promise<any[]> {
-    return this.sendMessage('walletTransactHistory', { address });
+  async getTransactionHistory(): Promise<any[]> {
+    return this.sendMessage('getTransactionHistory');
   }
 
   async estimateGasFee(to: string, amount: string): Promise<{ eth: string; usd: string }> {
