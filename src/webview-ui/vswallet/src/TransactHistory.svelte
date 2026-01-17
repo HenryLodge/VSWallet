@@ -160,7 +160,7 @@
               {/if}
 
               <div class="transaction-footer">
-                <span class="transaction-date">{transaction.date} at {transaction.time}</span>
+                <span class="transaction-date">{transaction.date} {transaction.time}</span>
                 <span class="transaction-status" 
                   class:confirmed={transaction.status === 'confirmed'} 
                   class:pending={transaction.status === 'pending'}
