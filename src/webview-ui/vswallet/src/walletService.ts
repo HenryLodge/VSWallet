@@ -109,6 +109,10 @@ export class WalletService {
   async getCurrETHPrice(): Promise<number> {
     return this.sendMessage('getCurrETHPrice');
   }
+
+  async getETHPriceChange(days: number): Promise<number> {
+    return this.sendMessage('getETHPriceChange', { days });
+  }
 }
 
 export const walletService = new WalletService();
