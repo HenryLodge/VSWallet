@@ -129,6 +129,11 @@ export class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
             }
             response = await this.getTransactions(wallet.id);
             break;
+
+          case 'getETHPriceChange':
+            await walletService.initializeProvider();
+            response = await walletService.getETHPriceChange(message.data.days);
+            break;
           
           default:
             throw new Error(`Unknown command: ${message.command}`);
