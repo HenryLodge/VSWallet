@@ -1,21 +1,34 @@
-# VSWallet
+# VSWallet - Sepolia Testnet
 
-A lightweight, self-custodial Ethereum wallet extension for Visual Studio Code.
+⚠️ **TESTING PURPOSES ONLY** - This wallet operates exclusively on the Sepolia testnet for development and testing.
 
 ## Overview
 
-VSWallet brings Ethereum wallet functionality directly into your development environment.  
-Manage crypto assets, send transactions, and track your portfolio without leaving VS Code.
+VSWallet is a lightweight, self-custodial Ethereum wallet extension for Visual Studio Code designed for testing and development on the Sepolia testnet. Test your dApps and smart contracts safely without risking real funds.
+
+## ⚠️ Important Notice
+
+- **Testnet Only**: This wallet works exclusively with Sepolia testnet ETH (SepoliaETH/SEP)
+- **No Real Value**: Sepolia ETH has no monetary value and cannot be exchanged for real ETH
+- **Development Tool**: Designed for developers testing blockchain applications
+- **Not for Production**: Do not use this wallet for mainnet or real transactions
 
 ## Features
 
-- **Secure Wallet Management** - Create new wallets or import existing ones using seed phrases
-- **Send & Receive ETH** - Transaction sending with customizable notes and gas estimation
-- **Real-time Price Tracking** - Live ETH/USD conversion with percentage change indicators
-- **Transaction History** - View all VSWallet transactions with detailed information
-- **Multi-Wallet Support** - Switch between multiple wallets seamlessly
-- **Testnet Support** - Sepolia testnet integration for safe testing
+- **Secure Wallet Management** - Create new test wallets or import existing ones using seed phrases
+- **Send & Receive Sepolia ETH** - Test transaction flows with zero risk
+- **Real-time Price Tracking** - Monitor ETH price movements with testnet balance display
+- **Transaction History** - View all your test transactions with detailed information
+- **Multi-Wallet Support** - Switch between multiple test wallets seamlessly
 - **Native VS Code UI** - Seamless integration with VS Code's sidebar
+
+## Getting Test ETH
+
+Sepolia ETH is free and can be obtained from faucets:
+
+- [Alchemy Sepolia Faucet](https://sepoliafaucet.com/)
+- [Infura Sepolia Faucet](https://www.infura.io/faucet/sepolia)
+- [Chainlink Sepolia Faucet](https://faucets.chain.link/sepolia)
 
 ## Installation
 
@@ -32,49 +45,56 @@ cd vswallet
 npm install
 ```
 
-3. Build the extension:
+3. Install webview dependencies:
 ```bash
+cd src/webview-ui/vswallet
+npm install
+cd ../../..
+```
+
+4. Build the extension:
+```bash
+npm run build:webview
 npm run compile
 ```
 
-4. Open the project in VS Code and press `F5` to launch in development mode
+5. Open the project in VS Code and press `F5` to launch in development mode
 
-### From VSIX
+### From Extension Marketplace
 
-Download the `.vsix` file from releases and install:
-```bash
-code --install-extension vswallet-x.x.x.vsix
-```
+*coming soon...*
 
 ## Usage
 
-### Creating a New Wallet
+### Creating a Test Wallet
 
 1. Open VSWallet from the VS Code sidebar
 2. Click the menu button in the top-left
 3. Select "New Wallet"
-4. Save your seed phrase and private key securely
+4. Save your seed phrase securely (even for test wallets)
+5. Get free Sepolia ETH from a faucet
 
-### Importing an Existing Wallet
+### Importing an Existing Test Wallet
 
 1. Open VSWallet sidebar
 2. Click menu and select "Connect Existing Wallet"
 3. Enter your 12 or 24-word seed phrase
-4. Your wallet will be imported
+4. Your test wallet will be imported
 
-### Sending Transactions
+### Testing Transactions
 
 1. Click "Send" on the home screen
-2. Enter recipient address
-3. Enter amount in ETH
+2. Enter recipient address (can be another test wallet)
+3. Enter amount in Sepolia ETH
 4. Add optional note
 5. Review gas fees and confirm
+6. Test transaction will appear in history
 
-### Managing Contacts
+### Managing Test Data
 
-1. Access contacts from the menu
-2. Add contacts with name, address, and optional notes
-3. Select contacts when sending for quick address input
+1. Access transaction history from the menu
+2. View all test transactions with status
+3. Clear all data via Command Palette: "VSWallet: Clear All Data"
 
 ## Architecture
 
@@ -82,9 +102,9 @@ code --install-extension vswallet-x.x.x.vsix
 
 - Frontend: Svelte + TypeScript
 - Backend: VS Code Extension API
-- Blockchain: Ethers.js v6
+- Blockchain: Ethers.js v6 (Sepolia Testnet)
 - Storage: VS Code SecretStorage API (encrypted)
-- Network: Ethereum & Sepolia Testnet
+- Network: Sepolia Testnet Only
 
 ### Project Structure
 ```
@@ -92,20 +112,23 @@ vswallet/
 ├── src/
 │   ├── extension.ts          # Extension entry point
 │   ├── sidebar.ts             # Sidebar provider
-│   └── ethers/
-│       └── walletService.ts   # Blockchain interaction
-├── webview/
-│   ├── App.svelte
-│   ├── HomeScreen.svelte
-│   ├── TransactSendScreen.svelte
-│   ├── TransactHistory.svelte
-│   ├── ContactsScreen.svelte
-│   ├── walletService.ts
-│   └── walletStore.ts
+│   ├── ethers/
+│   │   └── walletService.ts   # Blockchain interaction
+│   └── webview-ui/vswallet/src
+│       ├── App.svelte
+│       ├── ChangeWalletScreen.svelte
+│       ├── ConnectWalletScreen.svelte
+│       ├── HomeScreen.svelte
+│       ├── NewWalletScreen.svelte
+│       ├── TransactSendScreen.svelte
+│       ├── TransactRecieveScreen.svelte
+│       ├── TransactHistory.svelte
+│       ├── walletService.ts
+│       └── walletStore.ts
 └── package.json
 ```
 
-## Security
+## Security (Even for Test Wallets)
 
 ### Security Features
 
@@ -116,73 +139,63 @@ vswallet/
 
 ### Best Practices
 
-1. Never share your seed phrase
-2. Backup your seed phrase securely offline
-3. Use testnet (Sepolia) for development and testing
-4. Verify recipient addresses before sending
-5. Keep VS Code updated
+1. Treat test seed phrases with care (good practice)
+2. Backup seed phrases even for test wallets
+3. Never use test wallets for real funds
+4. Keep separate wallets for testnet vs mainnet
+5. Verify addresses before testing transactions
 
-## Development
+## Testing Scenarios
 
-### Prerequisites
+### Recommended Testing
 
-- Node.js v16+
-- VS Code v1.75+
-- npm or yarn
+- Send transactions between test wallets
+- Test insufficient balance scenarios
+- Verify transaction confirmation flows
+- Test wallet import/export functionality
+- Simulate gas price variations
+- Test multi-wallet switching
 
-### Setup
-```bash
-# Install dependencies
-npm install
+### Not Supported
 
-# Compile TypeScript
-npm run compile
-
-# Watch mode
-npm run watch
-
-# Build Svelte webview
-npm run build:webview
-```
-
-### Debugging
-
-1. Press `F5` in VS Code to launch Extension Development Host
-2. Open VSWallet sidebar in the new window
-3. Use Developer Tools to debug webview
-4. Backend logs appear in Debug Console
+- ❌ Mainnet Ethereum
+- ❌ Real ETH transactions  
+- ❌ ERC-20 tokens (currently)
+- ❌ Other networks (Polygon, BSC, etc.)
 
 ## Roadmap
 
-### Current (v1.0.0)
+### Current (v1.0.0) - Testnet
 
-- Wallet creation and import
-- Send/Receive ETH
-- Transaction history
-- Contacts management
-- Sepolia testnet support
-- Price tracking with percentage change
+- ✅ Wallet creation and import
+- ✅ Send/Receive Sepolia ETH
+- ✅ Transaction history
+- ✅ Multi-wallet support
+- ✅ Price tracking
 
-### Planned
+### Future Plans
 
-- Ethereum Mainnet support
-- ERC-20 token support
-- Multi-chain support (Polygon, BSC, Arbitrum)
-- Hardware wallet integration
-- Transaction export (CSV)
-- NFT viewing
-- DApp browser integration
+- ERC-20 token support on testnet
+- Multiple testnet support (Goerli, Mumbai, etc.)
 - Advanced gas controls
+- Transaction export (CSV)
+- Test contract interaction
+
+**Note**: Mainnet support is not planned. This tool is specifically designed for safe testing.
 
 ## Contributing
 
-Contributions are welcome. Please follow these steps:
+Contributions are welcome! This is a testnet-focused development tool.
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/feature-name`)
 3. Commit your changes (`git commit -m 'Add feature'`)
 4. Push to branch (`git push origin feature/feature-name`)
 5. Open a Pull Request
+
+## Disclaimer
+
+This software is provided for testing and development purposes only. Sepolia testnet ETH has no real-world value. The developers are not responsible for any misuse or misconfiguration. Always test thoroughly before deploying to production environments.
 
 ## License
 
