@@ -3,7 +3,8 @@
 <div style="display: flex; align-items: flex-start; gap: 20px;">
   <p align="center">
   <img src="./assets/screenshot1.png" width="250" />
-  <img src="./assets/screenshot2.png" width="247" />
+  <img src="./assets/screenshot2.png" width="251" />
+  <img src="./assets/screenshot3.png" width="247" />
 </p>
   <div style="flex: 1;">
 
