@@ -4,7 +4,7 @@
   
   let recipientAddress = '';
   let amount = '';
-  let currency = 'ETH';
+  let currency = 'SEP';
   let note = '';
   let showCurrencyDropdown = false;
   let showConfirmModal = false;
