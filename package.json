@@ -9,6 +9,11 @@
   "categories": [
     "Other"
   ],
+  "activationEvents": [
+    "onView:vscodeSidebar.openview",
+    "onCommand:vswallet.welcomeMessage",
+    "onCommand:vswallet.clearAllData"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
