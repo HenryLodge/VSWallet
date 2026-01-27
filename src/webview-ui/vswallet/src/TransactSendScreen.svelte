@@ -103,7 +103,7 @@
           
           {#if showCurrencyDropdown}
             <div class="currency-dropdown">
-              <button class="currency-option" on:click={() => selectCurrency('ETH')}>ETH</button>
+              <button class="currency-option" on:click={() => selectCurrency('ETH')}>SEP</button>
               <button class="currency-option" on:click={() => selectCurrency('USD')}>USD</button>
             </div>
           {/if}
@@ -125,7 +125,7 @@
       <div class="fee-row">
         <span class="fee-label">Estimated Fee</span>
         <div class="fee-values">
-          <span class="fee-eth">{estimatedFeeETH.toFixed(4)} ETH</span>
+          <span class="fee-eth">{estimatedFeeETH.toFixed(4)} SEP</span>
           <span class="fee-usd">${estimatedFeeUSD.toFixed(2)}</span>
         </div>
       </div>

@@ -73,7 +73,7 @@
           type: isSent ? 'sent' : 'received',
           address: otherAddress,
           amount: amountInEth.toFixed(6),
-          currency: 'ETH',
+          currency: 'SEP',
           usdValue: `$${usdValue}`,
           date: date.toLocaleDateString(),
           time: date.toLocaleTimeString(),

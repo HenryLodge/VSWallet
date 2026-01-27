@@ -191,7 +191,7 @@
       />
 
       <text x="80" y="70" class="wallet-eth-amount">
-        {toFixedNoRounding(WalletETHAmount, 4)} ETH
+        {toFixedNoRounding(WalletETHAmount, 4)} SEP
       </text>
       <text x="80" y="85" class="wallet-usd-amount">
         ${WalletUSDAmount.toFixed(2)} USD
