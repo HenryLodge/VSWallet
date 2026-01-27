@@ -1,17 +1,25 @@
 # VSWallet - Sepolia Testnet
 
-⚠️ **TESTING PURPOSES ONLY** - This wallet operates exclusively on the Sepolia testnet for development and testing.
+<div style="display: flex; align-items: flex-start; gap: 20px;">
+  <p align="center">
+  <img src="./assets/screenshot1.png" width="250" />
+  <img src="./assets/screenshot2.png" width="247" />
+</p>
+  <div style="flex: 1;">
 
 ## Overview
 
 VSWallet is a lightweight, self-custodial Ethereum wallet extension for Visual Studio Code designed for testing and development on the Sepolia testnet. Test your dApps and smart contracts safely without risking real funds.
 
-## ⚠️ Important Notice
+## ⚠️ Important Notice ⚠️
 
 - **Testnet Only**: This wallet works exclusively with Sepolia testnet ETH (SepoliaETH/SEP)
 - **No Real Value**: Sepolia ETH has no monetary value and cannot be exchanged for real ETH
 - **Development Tool**: Designed for developers testing blockchain applications
 - **Not for Production**: Do not use this wallet for mainnet or real transactions
+
+  </div>
+</div>
 
 ## Features
 
