@@ -131,6 +131,40 @@ export class WalletService {
     const price = Number(roundData.answer) / 1e8;
     return price;
   }
+
+  private storedPrices: { [key: string]: { price: number; timestamp: number } } = {};
+
+  async getETHPriceChange(days: number): Promise<number> {
+    const periodKey = `price_${days}d`;
+    const now = Date.now();
+    const stored = this.storedPrices[periodKey];
+    
+    // If we have a stored value and it's less than 30 seconds old, return the calculated change
+    if (stored && (now - stored.timestamp) < 30000) {
+      const currentPrice = await this.getCurrETHPrice();
+      const change = ((currentPrice - stored.price) / stored.price) * 100;
+      console.log(`Using cached baseline from ${Math.floor((now - stored.timestamp) / 1000)}s ago`);
+      return change;
+    }
+    
+    // Get current price for new baseline
+    const currentPrice = await this.getCurrETHPrice();
+    const periodMs = days * 24 * 60 * 60 * 1000;
+    
+    // If no stored value or the period has elapsed, save new baseline
+    if (!stored || (now - stored.timestamp) >= periodMs) {
+      this.storedPrices[periodKey] = {
+        price: currentPrice,
+        timestamp: now
+      };
+      console.log(`Saved new price baseline: $${currentPrice.toFixed(2)}`);
+      return 0; // No change yet for new baseline
+    }
+    
+    // Calculate change from stored baseline
+    const change = ((currentPrice - stored.price) / stored.price) * 100;
+    return change;
+  }
 }
 
 export const walletService = new WalletService();

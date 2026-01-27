@@ -1,6 +1,7 @@
 <script lang="ts">
   import { walletStore } from './walletStore';
   import { onMount } from 'svelte';
+  import { walletService } from './walletService';
   export let onNavigate: (screen: string) => void;
 
 
@@ -14,6 +15,7 @@
     // Update balance when component mounts
     if ($walletStore.isConnected && $walletStore.address) {
       walletStore.updateBalance();
+      updatePriceChange();
     }
     
     // Set up interval to update balance periodically
@@ -27,22 +29,67 @@
   });
 
   let PortfolioDeltaPercent = 25;
+  let selectedTimePeriod = "1D";
   let menuOpen = false;
 
-  // Stats data (to be populated by backend)
-  let transactionsLast90Days = 0;
-  let totalGasFeesETH = 0.0;
-  let totalGasFeesUSD = 0.0;
-  let averageTransactionValue = 0.0;
-  let lastTransactionDate = "Never";
+  async function fetchETHPriceChange(period: string = '1D'): Promise<number> {
+    try {
+      // Map period to days
+      const daysMap: { [key: string]: number } = {
+        '1D': 1,
+        '7D': 7,
+        '1M': 30,
+        '1Y': 365,
+        'ALL': 365 * 5 // Use 5 years for "ALL"
+      };
+      
+      const days = daysMap[period] || 1;
+      
+      // Call backend instead of direct API call
+      const change = await walletService.getETHPriceChange(days);
+      return change;
+    } catch (error) {
+      console.error('Error fetching price change:', error);
+      return 0;
+    }
+  }
+
+  async function updatePriceChange() {
+    isLoadingPriceChange = true;
+    ethPriceChange = await fetchETHPriceChange(selectedTimePeriod);
+    isLoadingPriceChange = false;
+    console.log(ethPriceChange);
+  }
+
+  let ethPriceChange = 0;
+  let isLoadingPriceChange = true;
+
+  // Calculate the arc progress based on price change
+  // Map price change from -100% to +100% to arc percentage 0% to 100%
+  $: {
+    // Map price change to arc percentage
+    // We'll use a range where ±10% price change fills the full arc
+    const maxChange = 20; // Adjust this to change sensitivity
+    
+    // Clamp price change to prevent going beyond arc limits
+    const clampedChange = Math.max(-maxChange, Math.min(maxChange, ethPriceChange));
+    
+    // Map -maxChange to +maxChange range to 0% to 100% arc range
+    // -10% = 0% arc (left), 0% = 50% arc (middle), +10% = 100% arc (right)
+    PortfolioDeltaPercent = ((clampedChange + maxChange) / (maxChange * 2)) * 100;
+  }
+
+  // Also update the arc color based on positive/negative
+  $: arcColor = ethPriceChange >= 0 ? PosProfitColor : NegProfitColor;
+  $: arcColorBack = ethPriceChange >= 0 ? PosProfitColorBack : NegProfitColorBack;
+  const circumference = 220;
+  $: dashOffset = circumference - (circumference * Math.min(PortfolioDeltaPercent, 100) / 100);
 
   const PosProfitColor = "#22c55e"
   const NegProfitColor = "#ef4444"
   const PosProfitColorBack = "#22ad5e"
   const NegProfitColorBack = "#cd4444"
 
-  const circumference = 220;
-  $: dashOffset = circumference - (circumference * Math.min(PortfolioDeltaPercent, 100) / 100);
 
   function toggleMenu() {
     menuOpen = !menuOpen;
@@ -53,10 +100,10 @@
     console.log('Menu action:', action);
   }
 
-  let selectedTimePeriod = "1D";
   function selectTimePeriod(period: string) {
     selectedTimePeriod = period;
     console.log('Time period selected:', period);
+    updatePriceChange();
   }
 
   function toFixedNoRounding(num: number, decimals: number): string {
@@ -95,28 +142,28 @@
     <div class="time-period-bar">
       <button class="period-button" 
         class:active={selectedTimePeriod === '1D'}
-        on:click={() => selectedTimePeriod = '1D'}>
+        on:click={() => selectTimePeriod('1D')}>
         1D
       </button>
       <button class="period-button" 
         class:active={selectedTimePeriod === '7D'}
-        on:click={() => selectedTimePeriod = '7D'}>
+        on:click={() => selectTimePeriod('7D')}>
         7D
       </button>
       <button class="period-button" 
         class:active={selectedTimePeriod === '1M'}
-        on:click={() => selectedTimePeriod = '1M'}>
+        on:click={() => selectTimePeriod('1M')}>
         1M
       </button>
       <button class="period-button" 
         class:active={selectedTimePeriod === '1Y'}
-        on:click={() => selectedTimePeriod = '1Y'}
+        on:click={() => selectTimePeriod('1Y')}
       >
         1Y
       </button>
       <button class="period-button" 
         class:active={selectedTimePeriod === 'ALL'}
-        on:click={() => selectedTimePeriod = 'ALL'}>
+        on:click={() => selectTimePeriod('ALL')}>
         ALL
       </button>
     </div>
@@ -126,7 +173,7 @@
         class="background-arc"
         d="M 10 80 A 70 70 0 0 1 150 80"
         fill="none"
-        stroke={PosProfitColorBack}
+        stroke={arcColorBack}
         stroke-width="2"
         stroke-linecap="round"
       />
@@ -135,18 +182,18 @@
         class="progress-arc"
         d="M 10 80 A 70 70 0 0 1 150 80"
         fill="none"
-        stroke={PosProfitColor}
+        stroke={arcColor}
         stroke-width="2"
         stroke-linecap="round"
         stroke-dasharray={circumference}
         stroke-dashoffset={dashOffset}
-        style="transition: stroke-dashoffset 0.3s ease;"
+        style="transition: stroke-dashoffset 0.3s ease, stroke 0.3s ease;"
       />
-      
-      <text x="80" y="65" class="wallet-eth-amount">
+
+      <text x="80" y="70" class="wallet-eth-amount">
         {toFixedNoRounding(WalletETHAmount, 4)} ETH
       </text>
-      <text x="80" y="80" class="wallet-usd-amount">
+      <text x="80" y="85" class="wallet-usd-amount">
         ${WalletUSDAmount.toFixed(2)} USD
       </text>
     </svg>
